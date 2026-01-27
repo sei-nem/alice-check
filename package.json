@@ -10,7 +10,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "cheerio": "^1.2.0",
-    "jquery": "^4.0.0"
+    "cheerio": "^1.2.0"
   }
 }

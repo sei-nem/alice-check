@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import * as cheerio from 'cheerio'; // cheerioは名前付きまたは全体でインポート
+import * as cheerio from 'cheerio'; 
 
 export default class HtmlDataExtractor {
   constructor(folderName, config) {
