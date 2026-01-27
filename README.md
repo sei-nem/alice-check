@@ -2,8 +2,9 @@
 npm i
 
 mkdir html
-```
 
-htmlディレクトリにhtmlファイルを入れる
+# htmlディレクトリにhtmlファイルを入れる
 
 node index.js
+
+```

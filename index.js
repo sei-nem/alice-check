@@ -31,10 +31,9 @@ const classNameJson = {
 		"selector": "#rms-content-order-details-block-destination-1-1-options-group-0-parcel-number",
 		"type": "value"
 	},
-	// "郵便番号": "",
-	// "送付先住所": "",
-	// "宛名": "",
-	// "電話番号": "",
+	"送付先住所": "#rms-content-order-details-block-destination-1-1-options > div.rms-content-order-details-contact-info.col-sm-12.rms-clear-padding > div.rms-content-order-details-contact-info-contact-options > span.address",
+	"宛名": "#rms-content-order-details-block-destination-1-1-options > div.rms-content-order-details-contact-info.col-sm-12.rms-clear-padding > div.rms-content-order-details-contact-info-names-wrapper > div.rms-content-order-details-contact-info-names > span.fullname",
+	"電話番号": "#rms-content-order-details-block-destination-1-1-options > div.rms-content-order-details-contact-info.col-sm-12.rms-clear-padding > div.rms-content-order-details-contact-info-contact-options > span.phone",
 	// "": "",
 };
 
