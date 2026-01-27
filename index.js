@@ -3,8 +3,8 @@ import main from './main.js';
 // 設定
 const classNameJson = {
   "注文番号": "rms-status-order-nr",
-  // "注文日": "",
-  // "注文時間": "",
+  "注文日": "rms-status-inprogress",
+  // "注文時間": "rms-status-inprogress",
   "名前": "fullname",
   "注文内容": "rms-span-open-in-new",
   // "金額": "",
