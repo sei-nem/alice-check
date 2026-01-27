@@ -2,7 +2,7 @@ import main from './main.js';
 
 // 設定
 const classNameJson = {
-	"注文番号": "#order-details-1 > div > div.rms-status-bar-wrapper > div.rms-status-bar.rms-status-inprogress > ul.pull-left > li:nth-child(1) > a",
+	"注文No.": "#order-details-1 > div > div.rms-status-bar-wrapper > div.rms-status-bar.rms-status-inprogress > ul.pull-left > li:nth-child(1) > a",
 	"注文日時": "#order-details-1 > div > div.rms-status-bar-wrapper > div.rms-status-bar.rms-status-inprogress > ul.pull-right > li > span:nth-child(2)",
 	"名前": "#order-details-1 > div > div.rms-content-order-details-blocks > div.rms-content-order-details-block-main-wrapper.col-sm-12.rms-clear-padding > div.rms-content-order-details-block-right-wrapper.col-sm-3.rms-clear-padding > div.rms-content-order-details-contact-info > div.rms-content-order-details-contact-info-names-wrapper > div.rms-content-order-details-contact-info-names > span.fullname",
 	"注文内容": "#rms-content-order-details-block-destination-1-1 > div.rms-content-order-details-block-left-wrapper.col-sm-9.rms-clear-padding > div > div.rms-row-wrapper > table > tbody > tr.opp-thick-border-green > td:nth-child(1) > div:nth-child(1) > a",
@@ -42,27 +42,32 @@ const classNameJson = {
 // 実行
 new main('html', classNameJson);
 
-const htmlResult = {
-	"注文番号": "",
-	"注文日時": "",
-	"名前": "",
-	"注文内容": "",
-	"クーポン": "",
-	"合計金額": "",
-	"支払い種別": "",
-	"備考": "",
-	"ひとことメモ": "",
-	"支払い完了日": "",
-	"注文確定日": "",
-	"依頼日": "",
-	"配送日指定": "",
-	"時間指定": "",
-	"置き配指定": "",
-	"発送日": "",
-	"納品予定日": "",
-	"伝票番号": "",
-	"送付先住所": "",
-	"宛名": "",
-	"電話番号": "",
-	// "": "",
-};
+const htmlResult =   {
+    "注文No.": "",
+    "注文日": "",
+    "注文時間": "",
+    "お客様名": "",
+    "品番": "",
+    "髪飾り種別": "",
+    "カラー": "",
+    "金額": "",
+    "クーポン利用": "",
+    "合計金額": ", ",
+    "支払種別": "",
+    "支払完了日": "",
+    "注文確定日": "",
+    "依頼日　　　(情報工房⇒ｼﾝｶﾞﾎﾟｰﾙﾌｧｯｼｮﾝ)": "",
+    "配送日指定": "",
+    "時間指定": "",
+    "置き配指定": "",
+    "発送元": "",
+    "発送日": "",
+    "納品予定日": "",
+    "お荷物伝票番号": "",
+    "郵便番号": "",
+    "送付先住所": "",     
+    "送付先宛名": "",
+    "電話番号": "",
+    "キャンセル": "",
+    "備考": ""
+  }
