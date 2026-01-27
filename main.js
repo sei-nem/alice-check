@@ -47,10 +47,12 @@ export default class HtmlDataExtractor {
         const result = {};
 
         Object.keys(this.config).forEach(key => {
-            const className = this.config[key].trim();
+            const config = this.config[key];
+            // 文字列の場合は直接セレクタ、オブジェクトの場合はselectorプロパティを使用
+            const selector = typeof config === 'string' ? config : config.selector;
 
-            // .first() を追加して最初に見つかった要素のみを対象にする
-            result[key] = $(`.${className}`).first().text().replace(/\s+/g, ' ').trim();
+            // selector を直接指定（class/cssセレクタ両対応）
+            result[key] = $(selector).first().text().replace(/\s+/g, ' ').trim();
         });
 
         return result;
