@@ -1,3 +1,5 @@
 npm i
 
+mkdir html
+
 node index.js
