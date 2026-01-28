@@ -15,11 +15,43 @@ export default class HtmlDataExtractor {
     // ここ直す
     loadConfig() {
         // htmlClass.json を読み込む
-        const configPath = path.join(path.dirname(new URL(import.meta.url).pathname), 'htmlClass.json');
-        const fixedPath = process.platform === 'win32' ? configPath.substring(1) : configPath;
+        // SEA環境対応：複数のパスから設定ファイルを探す
+        let configPath;
+        const possiblePaths = [
+            // 通常のNode.js環境（モジュール相対）
+            () => {
+                try {
+                    return path.join(path.dirname(new URL(import.meta.url).pathname), 'htmlClass.json');
+                } catch {
+                    return null;
+                }
+            },
+            // SEA環境：プロセスのカレントディレクトリ
+            () => path.join(process.cwd(), 'src', 'html', 'htmlClass.json'),
+            // SEA環境：EXE実行ディレクトリの親ディレクトリ
+            () => path.join(path.dirname(process.execPath), '..', 'src', 'html', 'htmlClass.json'),
+        ];
+        
+        for (const pathFn of possiblePaths) {
+            try {
+                const testPath = pathFn();
+                if (testPath && fs.existsSync(testPath)) {
+                    configPath = testPath;
+                    if (process.platform === 'win32' && configPath.startsWith('\\')) {
+                        configPath = configPath.substring(1);
+                    }
+                    break;
+                }
+            } catch (e) {
+                // パスの取得に失敗した場合は次を試す
+            }
+        }
         
         try {
-            const configData = fs.readFileSync(fixedPath, 'utf8');
+            if (!configPath) {
+                throw new Error('htmlClass.jsonが見つかりません');
+            }
+            const configData = fs.readFileSync(configPath, 'utf8');
             this.config = JSON.parse(configData);
             this.init();
         } catch (err) {
