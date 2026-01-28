@@ -1,14 +1,17 @@
 import HtmlDataExtractor from './html/Html.js';
+import ExcelReader from './excel/Excel.js';
 
 export default class Main {
-    constructor(htmlFolderPath) {
+    constructor(htmlFolderPath, excelFolderPath) {
         this.htmlFolderPath = htmlFolderPath;
+        this.excelFolderPath = excelFolderPath;
+
         this.init();
     }
 
     init() {
-        // HtmlDataExtractor を初期化して実行
-        new HtmlDataExtractor(this.htmlFolderPath);
+        // new HtmlDataExtractor(this.htmlFolderPath);
+        new ExcelReader(this.excelFolderPath);
     }
 
 }
