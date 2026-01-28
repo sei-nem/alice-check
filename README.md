@@ -2,7 +2,7 @@
 
 ## 使い方
 
-[alice-check.exe](blob/main/dist/alice-check.exe)をダウンロード
+[alice-check.exe](dist/alice-check.exe)をダウンロード
 
 適当なフォルダに入れる
 
