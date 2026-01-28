@@ -33,7 +33,8 @@ export default class ExcelReader {
                 
                 const result = {};
                 keys.forEach((key, index) => {
-                    result[key] = dataValues[index] || '';
+                    // セルの値をトリムして改行を削除
+                    result[key] = (dataValues[index] || '').trim();
                 });
                 results.push(result);
             });
