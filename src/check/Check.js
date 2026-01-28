@@ -126,7 +126,22 @@ export default class Checker {
                 Object.keys(row.htmlData).forEach(k => allKeys.add(k));
             }
             
-            const sortedKeys = Array.from(allKeys);
+            // キーの順序を定義（注文内容をお客様名と品番の間に配置）
+            const keyOrder = [
+                '注文No.', '注文日', '注文時間', 'お客様名', '注文内容', '品番', '髪飾り種別', 'カラー',
+                '金額', 'クーポン利用', '合計金額', '支払種別', '支払完了日', '注文確定日',
+                '依頼日　　　(情報工房⇒ｼﾝｶﾞﾎﾟｰﾙﾌｧｯｼｮﾝ)', '配送日指定', '時間指定', '置き配指定',
+                '発送元', '発送日', '納品予定日', 'お荷物伝票番号', '郵便番号', '送付先住所',
+                '送付先宛名', '電話番号', 'キャンセル', '備考', 'ひとことメモ'
+            ];
+            
+            const sortedKeys = keyOrder.filter(k => allKeys.has(k));
+            // 定義にないキーを末尾に追加
+            for (const k of allKeys) {
+                if (!sortedKeys.includes(k)) {
+                    sortedKeys.push(k);
+                }
+            }
             
             // CSV行を生成
             const lines = [];
@@ -139,7 +154,16 @@ export default class Checker {
             if (row.excelData) {
                 const excelRow = ['[Excel データ]'];
                 sortedKeys.forEach(key => {
-                    excelRow.push(row.excelData[key] || '');
+                    if (key === '注文内容') {
+                        // 品番、髪飾り種別、カラーを結合
+                        const productNumber = row.excelData['品番'] || '';
+                        const type = row.excelData['髪飾り種別'] || '';
+                        const color = row.excelData['カラー'] || '';
+                        const combined = [productNumber, type, color].filter(v => v).join(' ');
+                        excelRow.push(combined);
+                    } else {
+                        excelRow.push(row.excelData[key] || '');
+                    }
                 });
                 lines.push(this.escapeCSV(excelRow));
             }
@@ -156,12 +180,9 @@ export default class Checker {
             // 比較結果行
             const compareRow = ['比較結果'];
             sortedKeys.forEach(key => {
-                if (key === '品番') {
-                    compareRow.push(row.productMatch ? '○' : '×');
-                } else if (key === '髪飾り種別') {
-                    compareRow.push(row.typeMatch ? '○' : '×');
-                } else if (key === 'カラー') {
-                    compareRow.push(row.colorMatch ? '○' : '×');
+                if (key === '注文内容') {
+                    // 品番、髪飾り種別、カラーが全て注文内容に含まれているかチェック
+                    compareRow.push(row.contentMatch ? '○' : '×');
                 } else if (row.fieldMatches[key] !== undefined) {
                     compareRow.push(row.fieldMatches[key] ? '○' : '×');
                 } else {
