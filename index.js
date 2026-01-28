@@ -4,6 +4,10 @@ import process from 'node:process'
 import readline from 'readline';
 import { fileURLToPath } from 'url';
 
+
+
+
+
 // EXEディレクトリを特定
 let exeDir;
 try {
