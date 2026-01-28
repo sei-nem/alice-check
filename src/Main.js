@@ -6,6 +6,7 @@ export default class Main {
     constructor(htmlFolderPath, excelFolderPath) {
         this.htmlFolderPath = htmlFolderPath;
         this.excelFolderPath = excelFolderPath;
+        
         return this.init();
     }
 
