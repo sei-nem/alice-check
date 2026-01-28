@@ -2,11 +2,11 @@
 
 ## 使い方
 
-alice-check.exeをダウンロード
+[alice-check.exe](blob/main/dist/alice-check.exe)をダウンロード
 
 適当なフォルダに入れる
 
-同じ階層にhtmlフォルダexcelフォルダを作る
+同じ階層にhtmlフォルダ、excelフォルダを作る
 
 htmlフォルダにデータを取得したいhtmlを全て入れる
 
