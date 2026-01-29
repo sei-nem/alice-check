@@ -25,12 +25,16 @@ const htmlClass = {
 		"type": "timeRange"
 	},
 	"置き配指定": "#rms-content-order-details-block-destination-1-1-options > div.rms-content-order-details-contact-info.col-sm-12.rms-clear-padding > div.rms-content-order-details-contact-info-contact-options > span.address-okihai",
-	"発送元": "",
+	
+    "発送元": "",
+
 	"発送日": {
 		"selector": "#rms-content-order-details-block-destination-1-1-options-group-0-shipment-date",
 		"type": "value"
 	},
+
 	"納品予定日": "",
+
 	"お荷物伝票番号": {
 		"selector": "#rms-content-order-details-block-destination-1-1-options-group-0-parcel-number",
 		"type": "value"

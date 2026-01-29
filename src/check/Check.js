@@ -127,6 +127,7 @@ export default class Checker {
         return rows;
     }
 
+    // TODO: ここ直す
     async writeResult(rows) {
         const outDir = path.join(this.basePath, 'result');
         try {
