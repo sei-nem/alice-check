@@ -32,4 +32,4 @@ excelフォルダにexcel.txtを作る
 
 alice-check.exeを実行
 
-resultフォルダに比較結果のCSVファイルが生成される
+resultフォルダが同階層に作成され、比較結果のCSVファイルが保存される
