@@ -139,7 +139,13 @@ export default class HtmlDataExtractor {
             const parts = result['注文日時'].split(' ');
             if (parts.length >= 2) {
                 result['注文日'] = parts[0];
-                result['注文時間'] = parts[1];
+                const time = parts[1];
+                const m = time.match(/^(\d{1,2}):(\d{2})$/);
+                if (m) {
+                    result['注文時間'] = String(Number(m[1])) + ':' + m[2];
+                } else {
+                    result['注文時間'] = parts[1];
+                }
             } else {
                 result['注文日'] = parts[0] || '';
                 result['注文時間'] = '';
@@ -156,6 +162,7 @@ export default class HtmlDataExtractor {
         if (result['クーポン利用']) {
             result['クーポン利用'] = result['クーポン利用']
                 .replace(/円/g, '')
+                .replace(/,/g, '')
                 .replace(/-/g, '▲')
                 .trim();
         } else {
