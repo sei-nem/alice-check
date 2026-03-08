@@ -25,12 +25,16 @@ const htmlClass = {
 		"type": "timeRange"
 	},
 	"置き配指定": "#rms-content-order-details-block-destination-1-1-options > div.rms-content-order-details-contact-info.col-sm-12.rms-clear-padding > div.rms-content-order-details-contact-info-contact-options > span.address-okihai",
+
 	"発送元": "",
+
 	"発送日": {
 		"selector": "#rms-content-order-details-block-destination-1-1-options-group-0-shipment-date",
 		"type": "value"
 	},
+
 	"納品予定日": "",
+
 	"お荷物伝票番号": {
 		"selector": "#rms-content-order-details-block-destination-1-1-options-group-0-parcel-number",
 		"type": "value"
@@ -43,144 +47,185 @@ const htmlClass = {
 
 
 export default class HtmlDataExtractor {
-    constructor(folderPath) {
-        // 渡されたパスが絶寸パスかどうかを判定して処理
-        this.targetDir = path.isAbsolute(folderPath) ? folderPath : path.resolve(folderPath);
+	constructor(folderPath) {
+		// 渡されたパスが絶寸パスかどうかを判定して処理
+		this.targetDir = path.isAbsolute(folderPath) ? folderPath : path.resolve(folderPath);
 
-        this.config = null;
-        this.results = [];
-        this.loadConfig();
-    }
+		this.config = null;
+		this.results = [];
+		this.loadConfig();
+	}
 
-    loadConfig() {
-        // htmlClassを直接使用
-        this.config = htmlClass;
-        this.init();
-    }
+	loadConfig() {
+		// htmlClassを直接使用
+		this.config = htmlClass;
+		this.init();
+	}
 
-    init() {
-        const filePaths = this.getHtmlFilePaths();
-        if (filePaths.length === 0) {
-            console.log('❌ 対象のHTMLファイルが見つかりませんでした。');
-            return [];
-        }
+	init() {
+		const filePaths = this.getHtmlFilePaths();
+		if (filePaths.length === 0) {
+			console.log('❌ 対象のHTMLファイルが見つかりませんでした。');
+			return [];
+		}
 
-        filePaths.forEach(filePath => {
-            const data = this.extractData(filePath);
-            this.results.push(data);
-        });
+		filePaths.forEach(filePath => {
+			const data = this.extractData(filePath);
+			this.results.push(data);
+		});
 
-        return this.results;
-    }
+		return this.results;
+	}
 
-    getResults() {
-        return this.results;
-    }
+	getResults() {
+		return this.results;
+	}
 
-    getHtmlFilePaths() {
-        try {
-            const files = fs.readdirSync(this.targetDir);
-            return files
-                .filter(file => path.extname(file).toLowerCase() === '.html')
-                .map(file => path.join(this.targetDir, file));
-        } catch (err) {
-            console.error('ディレクトリ読み込み失敗:', err);
-            return [];
-        }
-    }
+	getHtmlFilePaths() {
+		try {
+			const files = fs.readdirSync(this.targetDir);
+			return files
+				.filter(file => path.extname(file).toLowerCase() === '.html')
+				.map(file => path.join(this.targetDir, file));
+		} catch (err) {
+			console.error('ディレクトリ読み込み失敗:', err);
+			return [];
+		}
+	}
 
-    extractData(filePath) {
-        const content = fs.readFileSync(filePath, 'utf8');
-        const $ = cheerio.load(content);
-        const result = {};
+	// TODO: hmtlのデータ整形をまとめたい
+	extractData(filePath) {
+		const content = fs.readFileSync(filePath, 'utf8');
+		const $ = cheerio.load(content);
+		const result = {};
 
-        Object.keys(this.config).forEach(key => {
-            const config = this.config[key];
-            // 文字列の場合は直接セレクタ、オブジェクトの場合はselectorプロパティを使用
-            const selector = typeof config === 'string' ? config : config.selector;
-            const type = typeof config === 'string' ? 'text' : (config.type || 'text');
+		Object.keys(this.config).forEach(key => {
+			const config = this.config[key];
+			// 文字列の場合は直接セレクタ、オブジェクトの場合はselectorプロパティを使用
+			const selector = typeof config === 'string' ? config : config.selector;
+			const type = typeof config === 'string' ? 'text' : (config.type || 'text');
 
-            // typeに応じて取得方法を変更
-            if (type === 'value') {
-                const element = $(selector).first();
-                result[key] = element.val() || element.attr('value') || '';
-            } else if (type === 'timeRange') {
-                // 時間指定：複数のセレクタから値を取得して範囲形式にする
-                const startElement = $(selector[0]).first();
-                const endElement = $(selector[1]).first();
-                const startValue = startElement.val() || '';
-                const endValue = endElement.val() || '';
-                
-                if (startValue && endValue) {
-                    result[key] = `${startValue}:00-${endValue}:00`;
-                } else {
-                    result[key] = '';
-                }
-            } else {
-                const element = $(selector).first();
-                result[key] = element.text().replace(/\s+/g, ' ').trim();
-            }
-        });
+			// typeに応じて取得方法を変更
+			if (type === 'value') {
+				const element = $(selector).first();
+				result[key] = element.val() || element.attr('value') || '';
+			} else if (type === 'timeRange') {
+				// 時間指定：複数のセレクタから値を取得して範囲形式にする
+				const startElement = $(selector[0]).first();
+				const endElement = $(selector[1]).first();
+				const startValue = startElement.val() || '';
+				const endValue = endElement.val() || '';
 
-        // 注文日時を注文日と注文時間に分割
-        if (result['注文日時']) {
-            const parts = result['注文日時'].split(' ');
-            if (parts.length >= 2) {
-                result['注文日'] = parts[0];
-                result['注文時間'] = parts[1];
-            } else {
-                result['注文日'] = parts[0] || '';
-                result['注文時間'] = '';
-            }
-            delete result['注文日時'];
-        }
+				if (startValue && endValue) {
+					result[key] = `${startValue}:00-${endValue}:00`;
+				} else {
+					result[key] = '';
+				}
+			} else {
+				const element = $(selector).first();
+				result[key] = element.text().replace(/\s+/g, ' ').trim();
+			}
+		});
 
-        // 金額から「円」を削除
-        if (result['金額']) {
-            result['金額'] = result['金額'].replace(/円/g, '').trim();
-        }
-        
-        // クーポン利用から「円」を削除、マイナス記号を▲に置き換え
-        if (result['クーポン利用']) {
-            result['クーポン利用'] = result['クーポン利用']
-                .replace(/円/g, '')
-                .replace(/-/g, '▲')
-                .trim();
-        }
-        
-        // 合計金額から「円」を削除
-        if (result['合計金額']) {
-            result['合計金額'] = result['合計金額'].replace(/円/g, '').trim();
-        }
-        
-        // 日付から時間を削除（日付部分のみを抽出）
-        const dateFields = ['支払完了日', '注文確定日', '依頼日　　　(情報工房⇒ｼﾝｶﾞﾎﾟｰﾙﾌｧｯｼｮﾝ)'];
-        dateFields.forEach(field => {
-            if (result[field]) {
-                const datePart = result[field].split(' ')[0];
-                result[field] = datePart;
-            }
-        });
+		this.dataFormat(result);
 
-        // 置き配指定から「置き配場所：」を削除
-        if (result['置き配指定']) {
-            result['置き配指定'] = result['置き配指定'].replace(/置き配場所[：:]/g, '').trim();
-        }
+		return result;
+	}
 
-        // 送付先住所から郵便番号を抽出して削除
-        if (result['送付先住所']) {
-            const addressText = result['送付先住所'];
-            const zipMatch = addressText.match(/〒?[\d\-]+/);
-            
-            if (zipMatch) {
-                // 郵便番号を抽出（〒記号は除外）
-                result['郵便番号'] = zipMatch[0].replace(/〒/, '');
-                // 送付先住所から郵便番号を削除（先頭の郵便番号部分のみを削除）
-                result['送付先住所'] = addressText.replace(/^〒?[\d\-]+\s*/, '').trim();
-            }
-        }
+	dataFormat(result) {
 
-        return result;
-    }
+		// 注文日時を注文日と注文時間に分割
+		if (result['注文日時']) {
+			const parts = result['注文日時'].split(' ');
+			if (parts.length >= 2) {
+				result['注文日'] = parts[0];
+				const time = parts[1];
+				const m = time.match(/^(\d{1,2}):(\d{2})$/);
+				if (m) {
+					result['注文時間'] = String(Number(m[1])) + ':' + m[2];
+				} else {
+					result['注文時間'] = parts[1];
+				}
+			} else {
+				result['注文日'] = parts[0] || '';
+				result['注文時間'] = '';
+			}
+			delete result['注文日時'];
+		}
+
+		// 金額から「円」を削除
+		if (result['金額']) {
+			result['金額'] = result['金額'].replace(/円/g, '').trim();
+		}
+
+		// クーポン利用から「円」を削除、マイナス記号を▲に置き換え
+		if (result['クーポン利用']) {
+			result['クーポン利用'] = result['クーポン利用']
+				.replace(/円/g, '')
+				.replace(/,/g, '')
+				.replace(/-/g, '▲')
+				.trim();
+		} else {
+			// 値がない（空文字やnullなどの）場合
+			result['クーポン利用'] = '×';
+		}
+
+		// 合計金額から「円」を削除
+		if (result['合計金額']) {
+			result['合計金額'] = result['合計金額'].replace(/円/g, '').trim();
+		}
+
+		// 日付から時間を削除（日付部分のみを抽出）
+		const dateFields = ['支払完了日', '注文確定日', '依頼日　　　(情報工房⇒ｼﾝｶﾞﾎﾟｰﾙﾌｧｯｼｮﾝ)'];
+		dateFields.forEach(field => {
+			if (result[field]) {
+				const datePart = result[field].split(' ')[0];
+				result[field] = datePart;
+			}
+		});
+
+		// 日付文字列のフォーマットを統一（ハイフン→スラッシュ、/0X の先頭ゼロ削除）
+		const normalizeDate = (v) => {
+			if (!v) return v;
+			let s = String(v).replace(/-/g, '/');
+			s = s.replace(/\/0(\d)/g, '/$1');
+			return s;
+		};
+
+		const fieldsToFormat = ['注文日', '支払完了日', '注文確定日', '依頼日　　　(情報工房⇒ｼﾝｶﾞﾎﾟｰﾙﾌｧｯｼｮﾝ)', '発送日', '納品予定日'];
+		fieldsToFormat.forEach(f => {
+			if (result[f]) {
+				result[f] = normalizeDate(result[f]);
+			}
+		});
+
+		// 値がある場合はそのまま、ない（空などの）場合は '-' を代入
+		result['配送日指定'] = result['配送日指定'] ? result['配送日指定'] : '-';
+
+		result['時間指定'] = result['時間指定'] ? result['時間指定'] : '指定なし';
+
+
+		// 置き配指定から「置き配場所：」を削除
+		if (result['置き配指定']) {
+			result['置き配指定'] = result['置き配指定'].replace(/置き配場所[：:]/g, '').trim();
+		} else {
+			result['置き配指定'] = '利用しない';
+		}
+
+		// 送付先住所から郵便番号を抽出して削除
+		if (result['送付先住所']) {
+			const addressText = result['送付先住所'];
+			const zipMatch = addressText.match(/〒?[\d\-]+/);
+
+			if (zipMatch) {
+				// 郵便番号を抽出（〒記号は除外）
+				result['郵便番号'] = zipMatch[0].replace(/〒/, '');
+				// 送付先住所から郵便番号を削除（先頭の郵便番号部分のみを削除）
+				result['送付先住所'] = addressText.replace(/^〒?[\d\-]+\s*/, '').trim();
+			}
+		}
+
+		return result;
+	}
 
 }
